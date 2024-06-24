@@ -4,7 +4,7 @@
 
 The Object Classifier project uses a combination of TensorFlow.js, COCO-SSD model, React, and Tailwind CSS to detect and classify objects in real-time using a webcam. This documentation will guide you through the setup, code structure, and key functionalities of the project.
 
-Checkout live demo (here)[https://live-object-classifier-tensorflow.vercel.app/]
+Checkout live demo [here](https://live-object-classifier-tensorflow.vercel.app/)
 
 ![Tensor Flow](https://www.gstatic.com/devrel-devsite/prod/vc5df62aff689c916c31b2ac1e49a7e8c5ecada1bb13dcdd68aaefb1e1e9b9ec0/tensorflow/images/lockup.svg)
 ![NextJs](https://assets.awwwards.com/awards/element/2022/09/6313eaf4b41bd275260216.png)
