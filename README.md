@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Object Classifier Documentation
 
-## Getting Started
+### Introduction
+The Object Classifier project uses a combination of TensorFlow.js, COCO-SSD model, React, and Tailwind CSS to detect and classify objects in real-time using a webcam. This documentation will guide you through the setup, code structure, and key functionalities of the project.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+### Project Setup
+
+#### Prerequisites
+- Node.js installed on your machine.
+- A package manager like npm or yarn.
+
+#### Installation
+1. **Clone the Repository:**
+   ```sh
+   git clone https://github.com/atharvaarbat/Live-Object-classifier-tensorflow.git
+   cd Live-Object-classifier-tensorflow
+   ```
+
+2. **Install Dependencies:**
+   ```sh
+   npm install
+   ```
+
+3. **Start the Development Server:**
+   ```sh
+   npm run dev
+   ```
+
+
+### Main Components
+The project consists of the following key components:
+
+1. **Webcam and Canvas:**
+   - Used to capture real-time video and display detection results.
+
+2. **Buttons and Dropdown:**
+   - Start and stop detection buttons.
+   - A dropdown to select detection frequency.
+
+3. **Object List:**
+   - Displays the detected objects with their class, confidence, and position.
+
+### Detection Logic
+
+#### Loading the Model
+The COCO-SSD model is loaded using TensorFlow.js in the `useEffect` hook:
+```jsx
+useEffect(() => {
+    const loadModel = async () => {
+        const net = await cocossd.load();
+        setNet(net);
+    };
+    loadModel();
+}, []);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Starting and Stopping Detection
+Detection is controlled using `setInterval` and `clearInterval` functions:
+```jsx
+const startDetection = () => {
+    if (net) {
+        const intervalId = setInterval(() => {
+            detect(net);
+        }, detectionFrequency);
+        setDetectionInterval(intervalId);
+    }
+};
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+const stopDetection = () => {
+    if (detectionInterval) {
+        clearInterval(detectionInterval);
+        setDetectionInterval(null);
+    }
+};
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### Object Detection
+The `detect` function performs object detection and updates the canvas with bounding boxes:
+```jsx
+const detect = async (net) => {
+    if (
+        typeof webcamRef.current !== "undefined" &&
+        webcamRef.current !== null &&
+        webcamRef.current.video.readyState === 4
+    ) {
+        const video = webcamRef.current.video;
+        const videoWidth = webcamRef.current.video.videoWidth;
+        const videoHeight = webcamRef.current.video.videoHeight;
 
-## Learn More
+        webcamRef.current.video.width = videoWidth;
+        webcamRef.current.video.height = videoHeight;
+        canvasRef.current.width = videoWidth;
+        canvasRef.current.height = videoHeight;
 
-To learn more about Next.js, take a look at the following resources:
+        const obj = await net.detect(video);
+        setObjects(obj);
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+        const ctx = canvasRef.current.getContext("2d");
+        drawRect(obj, ctx);
+    }
+};
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
